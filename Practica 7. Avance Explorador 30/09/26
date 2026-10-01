@@ -1,0 +1,232 @@
+//Equipo: 
+//Lopez Jaramillo Santiago Noel
+//Corrales Salgueiro Jesus Gerardo
+//Sauceda Higuera Roger Emiliano
+//Felix Aguilar Diana Alejandra
+//Avance 100% completado
+
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
+ */
+package exploradoraloasis2;
+
+import java.util.Scanner;
+import java.math.*;
+
+/**
+ *
+ * @author santi
+ */
+public class ExploradorAlOasis2 {
+
+    static int en = 100;
+    static int ag = 100;
+    static int co = 100;
+    static int oro = 20;
+    static int dias = 1;
+    static boolean juego = false;
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        // TODO code application logic here
+        Scanner read = new Scanner(System.in);
+
+        System.out.println("Hola!" + "\n" + "Empiezas la partida?" + "\n" + "S/N");
+        String pregunta = read.next();
+
+        if (pregunta.equals("S")) {
+            juego = true;
+        } else if (pregunta.equals("N")) {
+            juego = false;
+        }
+
+        boolean continuar = true;
+
+        while (continuar) {
+
+            juego = true;
+            while (juego) {
+
+                System.out.println("====== DIA " + dias + " ======");
+
+                System.out.println(
+                        "Agua: " + ag + " | "
+                        + "Comida: " + co + " | "
+                        + "Energia: " + en + " | "
+                        + "Oro: " + oro
+                );
+
+                if (dias < 10) {
+
+                    System.out.println(
+                            "Elige una opcion:\n"
+                            + "1. Explorar\n"
+                            + "2. Descansar\n"
+                            + "3. Racionar\n"
+                            + "4. Comprar en Oasis"
+                    );
+
+                    int opcion = read.nextInt();
+
+                    if (opcion == 1) {
+                        Explorar();
+                    } else if (opcion == 2) {
+                        Descansar();
+                    } else if (opcion == 3) {
+                        Racionar();
+                    } else if (opcion == 4) {
+                        System.out.println(
+                                "Que vas a comprar?: " + "\n"
+                                + "Comida" + "\n"
+                                + "Agua"
+                        );
+                        String compra = read.next();
+                        if (compra.equalsIgnoreCase("Comida")) {
+                            if (oro >= 10) {
+                                co += 20;
+                                oro -= 10;
+                            } else {
+                                System.out.println("No tienes suficiente oro.");
+                            }
+                        }
+                        if (compra.equalsIgnoreCase("Agua")) {
+                            if (oro >= 10) {
+                                ag += 20;
+                                oro -= 10;
+                            } else {
+                                System.out.println("No tienes suficiente oro.");
+                            }
+                        }
+                    }
+
+                    LimitarEstadisticas();
+                    Perder();
+
+                    if (juego) {
+                        dias++;
+                    }
+
+                } else {
+
+                    // DIA 10
+                    System.out.println("Has llegado al Oasis!");
+                    System.out.println("1. Ir al Oasis");
+
+                    int opcion = read.nextInt();
+
+                    if (opcion == 1) {
+                        verificarGanar();
+                    }
+                }
+            }
+            
+            System.out.println("Quieres volver a jugar? S/N");
+            String volver = read.next();
+
+            if (volver.equalsIgnoreCase("N")) {
+                continuar = false;
+            } else if (volver.equalsIgnoreCase("S")) {
+                Reiniciar();
+            }
+        }
+
+    }
+
+    public static void Explorar() {
+        ag -= 15;
+        co -= 10;
+        en -= 20;
+        EventoOro();
+        EventoTormenta();
+        LimitarEstadisticas();
+    }
+
+    public static void EventoOro() {
+        int min = 0, max = 15;
+        int nuevoOro = (int) (Math.random() * (max - min + 1)) + min;
+
+        oro += nuevoOro;
+        System.out.println("Has encontrado " + nuevoOro + " de oro");
+
+    }
+
+    public static void EventoTormenta() {
+        int probabilidad = (int) (Math.random() * 100) + 1;
+        if (probabilidad <= 30) {
+            en -= 15;
+            System.out.println("Llego una tormenta" + "\n" + "-15 de energía");
+        }
+    }
+
+    public static void Descansar() {
+        ag -= 10;
+        co -= 10;
+        en += 25;
+        LimitarEstadisticas();
+    }
+
+    public static void Racionar() {
+        ag -= 5;
+        co -= 5;
+        en -= 5;
+        LimitarEstadisticas();
+    }
+
+    public static void verificarGanar() {
+        if (dias == 10) {
+            if (ag != 0 && co != 0 && en != 0) {
+                juego = false;
+                System.out.println("FELICIDADES!! Llegaste al Oasis");
+                Puntaje();
+            }
+        }
+    }
+
+    public static void Perder() {
+        if (ag == 0 || co == 0 || en == 0) {
+            juego = false;
+            System.out.println("Perdiste" + "\n" + "Fin del juego");
+            Puntaje();
+        }
+    }
+
+    public static void Puntaje() {
+        int puntaje;
+        puntaje = (ag + co + en) + (oro * 2);
+        System.out.println("Tu puntaje final fue: " + puntaje);
+    }
+
+    public static void LimitarEstadisticas() {
+        if (en > 100) {
+            en = 100;
+        }
+        if (ag > 100) {
+            ag = 100;
+        }
+        if (co > 100) {
+            co = 100;
+        }
+
+        if (en < 0) {
+            en = 0;
+        }
+        if (ag < 0) {
+            ag = 0;
+        }
+        if (co < 0) {
+            co = 0;
+        }
+    }
+
+    public static void Reiniciar() {
+        en = 100;
+        ag = 100;
+        co = 100;
+        oro = 20;
+        dias = 1;
+        juego = true;
+    }
+}
